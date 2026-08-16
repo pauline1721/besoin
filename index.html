@@ -3,101 +3,385 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#efe3cf">
 <title>UNIS</title>
+
 <style>
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#efe3cf}button{font:inherit}
-#viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#efe3cf}
-#scene{position:relative;width:min(100vw,150vh);aspect-ratio:3/2;flex-shrink:0;transform-origin:50% 50%;will-change:transform,filter}
-#portesImage{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;user-select:none}
-.porte{position:absolute;top:27%;width:17.5%;height:55%;padding:0;border:0;background:transparent;cursor:pointer;perspective:1800px;-webkit-tap-highlight-color:transparent}
-.porte1{left:15%}.porte2{left:41.25%}.porte3{left:67.5%}
-.portail{position:absolute;inset:0;z-index:2;overflow:hidden;opacity:0;background:radial-gradient(ellipse at 50% 48%,#fff 0%,#fff 34%,#fffdf3 55%,#fff4c9 77%,#fff 100%);border-radius:50% 50% 2% 2%/22% 22% 2% 2%;box-shadow:inset 0 0 45px #fff,0 0 45px #fff,0 0 110px #fff,0 0 180px rgba(255,235,160,.96);transition:opacity .35s ease}
+*{box-sizing:border-box}
+html,body{margin:0;width:100%;height:100%;min-height:100%;overflow:hidden;background:#efe3cf}
+body{position:fixed;inset:0;-webkit-tap-highlight-color:transparent}
+button{font:inherit}
+
+/* FOND PLEIN ECRAN - surtout utile sur téléphone */
+#fond{position:fixed;inset:-30px;z-index:0;background:url("portes.png") center/cover no-repeat;filter:blur(24px) brightness(1.05);transform:scale(1.12);opacity:.55}
+
+/* léger voile pour garder les tons doux */
+#voile{position:fixed;inset:0;z-index:1;background:rgba(245,231,207,.28);pointer-events:none}
+
+/* CONTENEUR */
+#viewport{position:fixed;inset:0;z-index:2;display:flex;align-items:center;justify-content:center;overflow:hidden}
+
+/* SCENE PRINCIPALE */
+#scene{position:relative;width:min(100vw,150dvh);aspect-ratio:3/2;flex:none;transform-origin:50% 50%;will-change:transform,filter;transform:translateZ(0);backface-visibility:hidden}
+
+/* IMAGE DES PORTES */
+#portesImage{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;user-select:none;-webkit-user-drag:none}
+
+/* PORTES */
+.porte{position:absolute;top:27%;width:17.5%;height:55%;padding:0;margin:0;border:0;background:transparent;cursor:pointer;perspective:1800px;transform:translateZ(0)}
+.porte1{left:15%}
+.porte2{left:41.25%}
+.porte3{left:67.5%}
+
+/* OUVERTURE BLANCHE
+   volontairement légèrement plus grande que la porte
+   pour masquer complètement la porte originale */
+.portail{position:absolute;left:-2%;right:-2%;top:-1%;bottom:-1%;z-index:5;opacity:0;overflow:hidden;background:radial-gradient(ellipse at 50% 48%,#fff 0%,#fff 42%,#fffdf3 62%,#fff3c9 82%,#fff 100%);border-radius:50% 50% 2% 2%/22% 22% 2% 2%;box-shadow:inset 0 0 45px #fff,0 0 45px #fff,0 0 110px #fff,0 0 180px rgba(255,235,160,.95);transition:opacity .22s ease;transform:translateZ(1px)}
 .porte.ouverte .portail{opacity:1}
-.battant{position:absolute;inset:0;z-index:4;transform-origin:left center;transform-style:preserve-3d;backface-visibility:hidden;transition:transform 1.3s cubic-bezier(.18,.72,.12,1),filter 1s ease}
-.battant canvas{width:100%;height:100%;display:block;border-radius:50% 50% 2% 2%/22% 22% 2% 2%;backface-visibility:hidden}
-.porte.ouverte .battant{transform:perspective(1800px) rotateY(78deg);filter:brightness(.82)}
-#starfield{position:fixed;inset:0;z-index:24;pointer-events:none;overflow:hidden;opacity:0;transition:opacity .35s ease}
+
+/* BATTANT */
+.battant{position:absolute;inset:0;z-index:8;transform-origin:left center;transform-style:preserve-3d;backface-visibility:hidden;-webkit-backface-visibility:hidden;transition:transform 1.25s cubic-bezier(.18,.72,.12,1),filter 1s ease;transform:translateZ(3px)}
+.battant canvas{width:100%;height:100%;display:block;border-radius:50% 50% 2% 2%/22% 22% 2% 2%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.porte.ouverte .battant{transform:perspective(1800px) rotateY(78deg) translateZ(3px);filter:brightness(.82)}
+
+/* TUNNEL D'ETOILES */
+#starfield{position:fixed;inset:0;z-index:20;pointer-events:none;overflow:hidden;opacity:0;transition:opacity .25s ease;transform:translateZ(0)}
 #starfield.visible{opacity:1}
-.star{position:absolute;left:50%;top:50%;color:#d7a43c;text-shadow:0 0 5px #fff,0 0 12px #ffe39a,0 0 24px #ffc24a;opacity:0;transform:translate(-50%,-50%) scale(.2);will-change:transform,opacity}
+
+.star{position:absolute;color:#d2a13d;text-shadow:0 0 5px #fff,0 0 10px #ffe69c,0 0 20px #ffc64f;opacity:0;transform:translate(-50%,-50%) scale(.2);will-change:transform,opacity;backface-visibility:hidden}
 .star.run{animation:traverse var(--d) linear var(--delay) forwards}
-@keyframes traverse{0%{opacity:0;transform:translate(calc(-50% + var(--sx)),calc(-50% + var(--sy))) scale(.15)}8%{opacity:.9}22%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--ex)),calc(-50% + var(--ey))) scale(var(--scale))}}
-#scene.entree{animation:avancer 3.8s cubic-bezier(.28,.01,.07,1) forwards}
-@keyframes avancer{from{transform:scale(1);filter:blur(0)}to{transform:scale(6.4);filter:blur(1.3px)}}
+
+@keyframes traverse{
+0%{opacity:0;transform:translate(calc(-50% + var(--sx)),calc(-50% + var(--sy))) scale(.15)}
+8%{opacity:.7}
+18%{opacity:1}
+75%{opacity:.9}
+100%{opacity:0;transform:translate(calc(-50% + var(--ex)),calc(-50% + var(--ey))) scale(var(--scale))}
+}
+
+/* AVANCEE FLUIDE */
+#scene.entree{animation:avancer 3.55s cubic-bezier(.27,.02,.06,1) forwards}
+
+@keyframes avancer{
+0%{transform:scale(1) translateZ(0);filter:blur(0)}
+100%{transform:scale(6.2) translateZ(0);filter:blur(1.2px)}
+}
+
+/* FLASH FINAL */
 #flash{position:fixed;inset:0;z-index:30;background:#fff;opacity:0;pointer-events:none}
-#flash.actif{animation:flashBlanc 1.35s ease forwards}
-@keyframes flashBlanc{0%{opacity:0}30%{opacity:.04}55%{opacity:.22}78%{opacity:.72}100%{opacity:1}}
-#destination{position:fixed;inset:0;z-index:40;background:#fff;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .75s ease}
+#flash.actif{animation:flashBlanc 1.25s ease forwards}
+
+@keyframes flashBlanc{
+0%{opacity:0}
+30%{opacity:.03}
+55%{opacity:.2}
+78%{opacity:.72}
+100%{opacity:1}
+}
+
+/* IMAGE FINALE */
+#destination{position:fixed;inset:0;z-index:40;background:#fff;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .7s ease}
 #destination.visible{opacity:1;pointer-events:auto}
+
 #imageDestination{width:100%;height:100%;object-fit:contain;display:block}
-#retour{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);padding:11px 20px;border:1px solid rgba(142,105,55,.45);border-radius:30px;background:rgba(255,255,255,.82);backdrop-filter:blur(8px);color:#6d4d2c;font:11px Arial,sans-serif;letter-spacing:.13em;text-transform:uppercase;cursor:pointer}
-@media(orientation:portrait){#scene{width:100vw;height:auto}}@media(orientation:landscape){#scene{height:100vh;width:auto}}
+
+#retour{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);padding:11px 20px;border:1px solid rgba(142,105,55,.45);border-radius:30px;background:rgba(255,255,255,.84);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#6d4d2c;font:11px Arial,sans-serif;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+
+/* PC */
+@media(min-width:701px){
+#fond{opacity:0}
+#voile{display:none}
+#scene{width:min(100vw,150vh)}
+}
+
+/* TELEPHONE PORTRAIT */
+@media(max-width:700px) and (orientation:portrait){
+#viewport{height:100dvh;min-height:100svh}
+#scene{width:100vw;height:auto}
+}
+
+/* TELEPHONE PAYSAGE */
+@media(max-width:950px) and (orientation:landscape){
+#scene{height:100dvh;width:auto}
+}
+
+/* Evite certains bugs Android avec les animations 3D */
+@supports(-webkit-touch-callout:none){
+.battant{transform-style:preserve-3d}
+}
 </style>
 </head>
+
 <body>
+
+<div id="fond"></div>
+<div id="voile"></div>
+
 <div id="viewport">
 <div id="scene">
+
 <img id="portesImage" src="portes.png" alt="Les trois portes UNIS">
-<button class="porte porte1" data-x="23.75" data-y="54" data-image="souffler.png" aria-label="J’ai besoin de souffler"><div class="portail"></div><div class="battant"><canvas></canvas></div></button>
-<button class="porte porte2" data-x="50" data-y="54" data-image="douceur.png" aria-label="J’ai besoin de douceur"><div class="portail"></div><div class="battant"><canvas></canvas></div></button>
-<button class="porte porte3" data-x="76.25" data-y="54" data-image="avancer.png" aria-label="J’ai besoin d’avancer"><div class="portail"></div><div class="battant"><canvas></canvas></div></button>
+
+<button class="porte porte1" data-x="23.75" data-y="54" data-image="souffler.png" aria-label="J’ai besoin de souffler">
+<div class="portail"></div>
+<div class="battant"><canvas></canvas></div>
+</button>
+
+<button class="porte porte2" data-x="50" data-y="54" data-image="douceur.png" aria-label="J’ai besoin de douceur">
+<div class="portail"></div>
+<div class="battant"><canvas></canvas></div>
+</button>
+
+<button class="porte porte3" data-x="76.25" data-y="54" data-image="avancer.png" aria-label="J’ai besoin d’avancer">
+<div class="portail"></div>
+<div class="battant"><canvas></canvas></div>
+</button>
+
 </div>
 </div>
+
 <div id="starfield"></div>
 <div id="flash"></div>
-<div id="destination"><img id="imageDestination" src="" alt=""><button id="retour">Revenir aux portes</button></div>
-<audio id="carillon" preload="auto" playsinline><source src="carillon.m4a" type="audio/mp4"></audio>
+
+<div id="destination">
+<img id="imageDestination" src="" alt="">
+<button id="retour">Revenir aux portes</button>
+</div>
+
+<audio id="carillon" preload="auto" playsinline>
+<source src="carillon.m4a" type="audio/mp4">
+</audio>
+
 <script>
-const scene=document.getElementById("scene"),imagePrincipale=document.getElementById("portesImage"),portes=document.querySelectorAll(".porte"),starfield=document.getElementById("starfield"),flash=document.getElementById("flash"),destination=document.getElementById("destination"),imageDestination=document.getElementById("imageDestination"),retour=document.getElementById("retour"),carillon=document.getElementById("carillon");let animationEnCours=false;
-function creerBattants(){const W=imagePrincipale.naturalWidth,H=imagePrincipale.naturalHeight;if(!W||!H)return;portes.forEach(porte=>{const canvas=porte.querySelector("canvas"),ctx=canvas.getContext("2d"),gauche=porte.classList.contains("porte1")?15:porte.classList.contains("porte2")?41.25:67.5,haut=27,largeur=17.5,hauteur=55,sx=W*gauche/100,sy=H*haut/100,sw=W*largeur/100,sh=H*hauteur/100;canvas.width=Math.round(sw);canvas.height=Math.round(sh);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(imagePrincipale,sx,sy,sw,sh,0,0,canvas.width,canvas.height)})}
-if(imagePrincipale.complete)creerBattants();else imagePrincipale.addEventListener("load",creerBattants);
+const scene=document.getElementById("scene");
+const imagePrincipale=document.getElementById("portesImage");
+const portes=document.querySelectorAll(".porte");
+const starfield=document.getElementById("starfield");
+const flash=document.getElementById("flash");
+const destination=document.getElementById("destination");
+const imageDestination=document.getElementById("imageDestination");
+const retour=document.getElementById("retour");
+const carillon=document.getElementById("carillon");
+
+let animationEnCours=false;
+
+/* FABRICATION DES BATTANTS */
+function creerBattants(){
+
+const W=imagePrincipale.naturalWidth;
+const H=imagePrincipale.naturalHeight;
+
+if(!W||!H)return;
+
+portes.forEach(porte=>{
+
+const canvas=porte.querySelector("canvas");
+const ctx=canvas.getContext("2d");
+
+const gauche=
+porte.classList.contains("porte1")?15:
+porte.classList.contains("porte2")?41.25:
+67.5;
+
+const haut=27;
+const largeur=17.5;
+const hauteur=55;
+
+const sx=W*gauche/100;
+const sy=H*haut/100;
+const sw=W*largeur/100;
+const sh=H*hauteur/100;
+
+canvas.width=Math.round(sw);
+canvas.height=Math.round(sh);
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+ctx.drawImage(
+imagePrincipale,
+sx,sy,sw,sh,
+0,0,canvas.width,canvas.height
+);
+
+});
+}
+
+if(imagePrincipale.complete&&imagePrincipale.naturalWidth){
+creerBattants();
+}else{
+imagePrincipale.addEventListener("load",creerBattants);
+}
+
+/* REFAIRE LES CANVAS SI LE TELEPHONE CHANGE D'ORIENTATION */
+window.addEventListener("orientationchange",()=>{
+setTimeout(creerBattants,350);
+});
+
+window.addEventListener("resize",()=>{
+if(!animationEnCours)creerBattants();
+});
+
+/* TUNNEL ETOILES */
 function creerTunnelEtoiles(porte){
+
 starfield.innerHTML="";
-const r=porte.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height*.52;
-for(let i=0;i<220;i++){
-const a=Math.random()*Math.PI*2,departR=Math.random()*Math.max(r.width*.42,18),sx=Math.cos(a)*departR,sy=Math.sin(a)*departR*.75,distance=Math.max(innerWidth,innerHeight)*(0.65+Math.random()*1.1),ex=Math.cos(a)*distance,ey=Math.sin(a)*distance,s=document.createElement("span");
+
+const r=porte.getBoundingClientRect();
+const cx=r.left+r.width/2;
+const cy=r.top+r.height*.52;
+
+const mobile=window.matchMedia("(max-width:700px)").matches;
+
+/* moins d'étoiles sur téléphone pour rester fluide */
+const nombre=mobile?90:150;
+
+for(let i=0;i<nombre;i++){
+
+const angle=Math.random()*Math.PI*2;
+
+/* certaines étoiles démarrent très près du centre,
+   d'autres autour de toute la porte */
+const rayonDepart=Math.random()*Math.max(r.width*.58,22);
+
+const sx=Math.cos(angle)*rayonDepart;
+const sy=Math.sin(angle)*rayonDepart*.85;
+
+const distance=Math.max(window.innerWidth,window.innerHeight)*
+(.7+Math.random()*1.1);
+
+const ex=Math.cos(angle)*distance;
+const ey=Math.sin(angle)*distance;
+
+const s=document.createElement("span");
+
 s.className="star";
 s.textContent="★";
+
 s.style.left=cx+"px";
 s.style.top=cy+"px";
-s.style.fontSize=(10+Math.random()*18)+"px";
+
+/* étoiles un peu plus petites sur téléphone */
+const taille=mobile?
+(8+Math.random()*11):
+(9+Math.random()*15);
+
+s.style.fontSize=taille+"px";
+
 s.style.setProperty("--sx",sx+"px");
 s.style.setProperty("--sy",sy+"px");
 s.style.setProperty("--ex",ex+"px");
 s.style.setProperty("--ey",ey+"px");
-s.style.setProperty("--scale",(1.8+Math.random()*3.7));
-s.style.setProperty("--d",(1.4+Math.random()*2.7)+"s");
-s.style.setProperty("--delay",(Math.random()*1.8)+"s");
-starfield.appendChild(s)
+
+s.style.setProperty(
+"--scale",
+mobile?
+(1.4+Math.random()*2.3):
+(1.6+Math.random()*3)
+);
+
+s.style.setProperty(
+"--d",
+(1.6+Math.random()*2.2)+"s"
+);
+
+s.style.setProperty(
+"--delay",
+(Math.random()*1.65)+"s"
+);
+
+starfield.appendChild(s);
 }
+
 starfield.classList.add("visible");
-requestAnimationFrame(()=>document.querySelectorAll(".star").forEach(s=>s.classList.add("run")))
+
+requestAnimationFrame(()=>{
+starfield.querySelectorAll(".star").forEach(s=>{
+s.classList.add("run");
+});
+});
 }
+
+/* OUVERTURE */
 function ouvrirPorte(porte){
+
 if(animationEnCours)return;
+
 animationEnCours=true;
+
 imageDestination.src=porte.dataset.image;
-scene.style.transformOrigin=porte.dataset.x+"% "+porte.dataset.y+"%";
-try{carillon.currentTime=0;const p=carillon.play();if(p)p.catch(()=>{})}catch(e){}
+
+/* Zoom exactement vers la porte choisie */
+scene.style.transformOrigin=
+porte.dataset.x+"% "+porte.dataset.y+"%";
+
+/* son */
+try{
+carillon.currentTime=0;
+const p=carillon.play();
+if(p)p.catch(()=>{});
+}catch(e){}
+
+/* ouverture de la porte */
 porte.classList.add("ouverte");
-setTimeout(()=>creerTunnelEtoiles(porte),250);
-setTimeout(()=>scene.classList.add("entree"),650);
-setTimeout(()=>flash.classList.add("actif"),2900);
-setTimeout(()=>destination.classList.add("visible"),3900)
+
+/* étoiles */
+setTimeout(()=>{
+creerTunnelEtoiles(porte);
+},220);
+
+/* avancée */
+setTimeout(()=>{
+scene.classList.add("entree");
+},650);
+
+/* blanc final */
+setTimeout(()=>{
+flash.classList.add("actif");
+},2750);
+
+/* image correspondant à la porte */
+setTimeout(()=>{
+destination.classList.add("visible");
+},3650);
 }
-portes.forEach(porte=>porte.addEventListener("click",()=>ouvrirPorte(porte)));
+
+portes.forEach(porte=>{
+porte.addEventListener("click",()=>{
+ouvrirPorte(porte);
+});
+});
+
+/* RETOUR */
 retour.addEventListener("click",()=>{
+
 destination.classList.remove("visible");
 flash.classList.remove("actif");
 starfield.classList.remove("visible");
 starfield.innerHTML="";
+
 scene.classList.remove("entree");
-portes.forEach(porte=>porte.classList.remove("ouverte"));
+
+portes.forEach(porte=>{
+porte.classList.remove("ouverte");
+});
+
 scene.style.transformOrigin="50% 50%";
-try{carillon.pause();carillon.currentTime=0}catch(e){}
-setTimeout(()=>{imageDestination.src="";animationEnCours=false},850)
+
+try{
+carillon.pause();
+carillon.currentTime=0;
+}catch(e){}
+
+setTimeout(()=>{
+imageDestination.src="";
+animationEnCours=false;
+creerBattants();
+},850);
+
 });
 </script>
+
 </body>
 </html>
 ```
