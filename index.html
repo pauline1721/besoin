@@ -10,44 +10,43 @@
 #viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#efe3cf}
 #scene{position:relative;width:min(100vw,150vh);aspect-ratio:3/2;flex-shrink:0;transform-origin:50% 50%;will-change:transform,filter}
 #portesImage{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;user-select:none}
-.porte{position:absolute;top:27%;width:17.5%;height:55%;border:0;padding:0;background:transparent;cursor:pointer;perspective:1800px;-webkit-tap-highlight-color:transparent}
+.porte{position:absolute;top:27%;width:17.5%;height:55%;padding:0;border:0;background:transparent;cursor:pointer;perspective:1800px;-webkit-tap-highlight-color:transparent}
 .porte1{left:15%}.porte2{left:41.25%}.porte3{left:67.5%}
-.portail{position:absolute;left:4%;right:4%;top:0;bottom:1%;z-index:1;opacity:0;overflow:hidden;background:radial-gradient(ellipse at 50% 48%,#fff 0%,#fff 40%,#fffbe9 65%,#fff4c9 82%,#fff 100%);box-shadow:0 0 30px #fff,0 0 80px #fff,0 0 150px rgba(255,241,190,.9);clip-path:path("M 0.5 1 C 0.5 1 0.5 0.28 0.5 0.23 C 0.5 0.08 0.36 0 0.18 0 C 0.08 0 0 0.09 0 0.22 L 0 1 Z");transition:opacity .5s ease}
+.portail{position:absolute;inset:0;z-index:2;overflow:hidden;opacity:0;background:radial-gradient(ellipse at 50% 48%,#fff 0%,#fff 38%,#fffdf4 58%,#fff4cf 78%,#fff 100%);border-radius:50% 50% 2% 2%/22% 22% 2% 2%;box-shadow:inset 0 0 25px #fff,0 0 30px #fff,0 0 75px #fff,0 0 130px rgba(255,239,180,.9);transition:opacity .3s ease}
 .porte.ouverte .portail{opacity:1}
-.arche{position:absolute;left:4%;right:4%;top:0;bottom:1%;z-index:2;overflow:hidden;border-radius:48% 48% 2% 2%/21% 21% 2% 2%;pointer-events:none}
-.battant{position:absolute;inset:0;z-index:3;transform-origin:left center;transform-style:preserve-3d;backface-visibility:hidden;transition:transform 1.35s cubic-bezier(.2,.7,.12,1),filter 1s ease}
-.battant canvas{width:100%;height:100%;display:block;border-radius:48% 48% 2% 2%/21% 21% 2% 2%}
-.porte.ouverte .battant{transform:perspective(1800px) rotateY(79deg) scaleX(.97);filter:brightness(.88)}
-#etoiles{position:fixed;inset:0;z-index:18;pointer-events:none;opacity:0;transition:opacity .5s ease}
+.battant{position:absolute;inset:0;z-index:4;transform-origin:left center;transform-style:preserve-3d;backface-visibility:hidden;transition:transform 1.25s cubic-bezier(.18,.72,.12,1),filter 1s ease}
+.battant canvas{width:100%;height:100%;display:block;border-radius:50% 50% 2% 2%/22% 22% 2% 2%;backface-visibility:hidden}
+.porte.ouverte .battant{transform:perspective(1800px) rotateY(78deg);filter:brightness(.82)}
+.sparkles-door{position:absolute;inset:0;z-index:3;overflow:hidden;border-radius:50% 50% 2% 2%/22% 22% 2% 2%;opacity:0;pointer-events:none}
+.porte.ouverte .sparkles-door{opacity:1}
+.sparkles-door span{position:absolute;color:#d9ad52;text-shadow:0 0 7px #fff,0 0 13px #ffe6a5;opacity:0;animation:scintille 1.6s ease-in-out infinite}
+.sparkles-door span:nth-child(1){left:22%;top:19%;font-size:16px;animation-delay:.05s}.sparkles-door span:nth-child(2){right:20%;top:30%;font-size:11px;animation-delay:.25s}.sparkles-door span:nth-child(3){left:37%;top:45%;font-size:13px;animation-delay:.45s}.sparkles-door span:nth-child(4){right:30%;top:61%;font-size:18px;animation-delay:.65s}.sparkles-door span:nth-child(5){left:25%;bottom:17%;font-size:11px;animation-delay:.85s}.sparkles-door span:nth-child(6){right:18%;bottom:27%;font-size:14px;animation-delay:1.05s}
+@keyframes scintille{0%,100%{opacity:0;transform:scale(.25) rotate(0)}45%{opacity:1;transform:scale(1.15) rotate(45deg)}70%{opacity:.7;transform:scale(.8) rotate(90deg)}}
+#etoiles{position:fixed;inset:0;z-index:22;pointer-events:none;opacity:0;transition:opacity .4s ease}
 #etoiles.actif{opacity:1}
-.star{position:absolute;color:#d6a84d;font-size:clamp(10px,1.5vw,24px);opacity:0;text-shadow:0 0 8px rgba(255,232,172,.9);animation:etoile 2s ease-out infinite}
-.s1{top:7%;left:12%;animation-delay:0s}.s2{top:3%;left:42%;animation-delay:.08s}.s3{top:8%;right:10%;animation-delay:.16s}.s4{top:28%;left:5%;animation-delay:.24s}.s5{top:31%;right:4%;animation-delay:.32s}.s6{bottom:21%;left:8%;animation-delay:.4s}.s7{bottom:18%;right:8%;animation-delay:.48s}.s8{bottom:5%;left:29%;animation-delay:.56s}.s9{bottom:7%;right:29%;animation-delay:.64s}.s10{top:48%;left:17%;animation-delay:.72s}.s11{top:50%;right:17%;animation-delay:.8s}.s12{bottom:10%;left:50%;animation-delay:.88s}
-@keyframes etoile{0%{opacity:0;transform:scale(.3) rotate(0deg)}25%{opacity:1;transform:scale(1.1) rotate(35deg)}60%{opacity:.7;transform:scale(.8) rotate(80deg)}100%{opacity:0;transform:scale(.2) rotate(130deg)}}
-#scene.entree{animation:avancer 2.8s cubic-bezier(.28,.02,.08,1) forwards}
-@keyframes avancer{0%{transform:scale(1);filter:blur(0)}100%{transform:scale(5.2);filter:blur(2px)}}
+.star{position:absolute;color:#d9ad52;text-shadow:0 0 8px #fff,0 0 14px #ffe5a0;opacity:0;animation:voler 1.7s ease-out infinite}
+.s1{top:8%;left:10%;animation-delay:0s}.s2{top:4%;left:39%;animation-delay:.08s}.s3{top:9%;right:10%;animation-delay:.16s}.s4{top:29%;left:7%;animation-delay:.24s}.s5{top:32%;right:6%;animation-delay:.32s}.s6{bottom:22%;left:9%;animation-delay:.4s}.s7{bottom:18%;right:9%;animation-delay:.48s}.s8{bottom:7%;left:29%;animation-delay:.56s}.s9{bottom:8%;right:29%;animation-delay:.64s}.s10{top:48%;left:18%;animation-delay:.72s}.s11{top:51%;right:18%;animation-delay:.8s}.s12{bottom:12%;left:50%;animation-delay:.88s}
+@keyframes voler{0%{opacity:0;transform:scale(.25) translate(0,0) rotate(0)}25%{opacity:1}100%{opacity:0;transform:scale(1.6) translate(15px,-35px) rotate(130deg)}}
+#scene.entree{animation:avancer 3s cubic-bezier(.32,.01,.08,1) forwards}
+@keyframes avancer{from{transform:scale(1);filter:blur(0)}to{transform:scale(5.6);filter:blur(1.5px)}}
 #flash{position:fixed;inset:0;z-index:30;background:#fff;opacity:0;pointer-events:none}
-#flash.actif{animation:flashBlanc 1.25s ease forwards}
-@keyframes flashBlanc{0%{opacity:0}35%{opacity:.1}65%{opacity:.52}85%{opacity:.93}100%{opacity:1}}
-#destination{position:fixed;inset:0;z-index:40;background:#fff;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .8s ease}
+#flash.actif{animation:flashBlanc 1.2s ease forwards}
+@keyframes flashBlanc{0%{opacity:0}30%{opacity:.08}60%{opacity:.38}82%{opacity:.88}100%{opacity:1}}
+#destination{position:fixed;inset:0;z-index:40;background:#fff;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .7s ease}
 #destination.visible{opacity:1;pointer-events:auto}
 #imageDestination{width:100%;height:100%;object-fit:contain;display:block}
-#retour{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);padding:11px 20px;border:1px solid rgba(142,105,55,.45);border-radius:30px;background:rgba(255,255,255,.8);backdrop-filter:blur(8px);color:#6d4d2c;font:11px Arial,sans-serif;letter-spacing:.13em;text-transform:uppercase;cursor:pointer}
-@media(orientation:portrait){#scene{width:100vw;height:auto}}
-@media(orientation:landscape){#scene{height:100vh;width:auto}}
+#retour{position:absolute;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);padding:11px 20px;border:1px solid rgba(142,105,55,.45);border-radius:30px;background:rgba(255,255,255,.82);backdrop-filter:blur(8px);color:#6d4d2c;font:11px Arial,sans-serif;letter-spacing:.13em;text-transform:uppercase;cursor:pointer}
+@media(orientation:portrait){#scene{width:100vw;height:auto}}@media(orientation:landscape){#scene{height:100vh;width:auto}}
 </style>
 </head>
 <body>
-<div id="viewport">
-<div id="scene">
+<div id="viewport"><div id="scene">
 <img id="portesImage" src="portes.png" alt="Les trois portes UNIS">
-<button class="porte porte1" data-x="23.75" data-y="54" data-image="souffler.png" aria-label="J’ai besoin de souffler"><div class="portail"></div><div class="battant"><canvas></canvas></div></button>
-<button class="porte porte2" data-x="50" data-y="54" data-image="douceur.png" aria-label="J’ai besoin de douceur"><div class="portail"></div><div class="battant"><canvas></canvas></div></button>
-<button class="porte porte3" data-x="76.25" data-y="54" data-image="avancer.png" aria-label="J’ai besoin d’avancer"><div class="portail"></div><div class="battant"><canvas></canvas></div></button>
-</div>
-</div>
-<div id="etoiles">
-<span class="star s1">✦</span><span class="star s2">✧</span><span class="star s3">✦</span><span class="star s4">✧</span><span class="star s5">✦</span><span class="star s6">✧</span><span class="star s7">✦</span><span class="star s8">✧</span><span class="star s9">✦</span><span class="star s10">✧</span><span class="star s11">✦</span><span class="star s12">✧</span>
-</div>
+<button class="porte porte1" data-x="23.75" data-y="54" data-image="souffler.png" aria-label="J’ai besoin de souffler"><div class="portail"></div><div class="sparkles-door"><span>✦</span><span>✧</span><span>✦</span><span>✧</span><span>✦</span><span>✧</span></div><div class="battant"><canvas></canvas></div></button>
+<button class="porte porte2" data-x="50" data-y="54" data-image="douceur.png" aria-label="J’ai besoin de douceur"><div class="portail"></div><div class="sparkles-door"><span>✦</span><span>✧</span><span>✦</span><span>✧</span><span>✦</span><span>✧</span></div><div class="battant"><canvas></canvas></div></button>
+<button class="porte porte3" data-x="76.25" data-y="54" data-image="avancer.png" aria-label="J’ai besoin d’avancer"><div class="portail"></div><div class="sparkles-door"><span>✦</span><span>✧</span><span>✦</span><span>✧</span><span>✦</span><span>✧</span></div><div class="battant"><canvas></canvas></div></button>
+</div></div>
+<div id="etoiles"><span class="star s1">✦</span><span class="star s2">✧</span><span class="star s3">✦</span><span class="star s4">✧</span><span class="star s5">✦</span><span class="star s6">✧</span><span class="star s7">✦</span><span class="star s8">✧</span><span class="star s9">✦</span><span class="star s10">✧</span><span class="star s11">✦</span><span class="star s12">✧</span></div>
 <div id="flash"></div>
 <div id="destination"><img id="imageDestination" src="" alt=""><button id="retour">Revenir aux portes</button></div>
 <audio id="carillon" preload="auto" playsinline><source src="carillon.m4a" type="audio/mp4"></audio>
@@ -55,7 +54,7 @@
 const scene=document.getElementById("scene"),imagePrincipale=document.getElementById("portesImage"),portes=document.querySelectorAll(".porte"),flash=document.getElementById("flash"),etoiles=document.getElementById("etoiles"),destination=document.getElementById("destination"),imageDestination=document.getElementById("imageDestination"),retour=document.getElementById("retour"),carillon=document.getElementById("carillon");let animationEnCours=false;
 function creerBattants(){const W=imagePrincipale.naturalWidth,H=imagePrincipale.naturalHeight;if(!W||!H)return;portes.forEach(porte=>{const canvas=porte.querySelector("canvas"),ctx=canvas.getContext("2d"),gauche=porte.classList.contains("porte1")?15:porte.classList.contains("porte2")?41.25:67.5,haut=27,largeur=17.5,hauteur=55,sx=W*gauche/100,sy=H*haut/100,sw=W*largeur/100,sh=H*hauteur/100;canvas.width=Math.round(sw);canvas.height=Math.round(sh);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(imagePrincipale,sx,sy,sw,sh,0,0,canvas.width,canvas.height)})}
 if(imagePrincipale.complete)creerBattants();else imagePrincipale.addEventListener("load",creerBattants);
-function ouvrirPorte(porte){if(animationEnCours)return;animationEnCours=true;imageDestination.src=porte.dataset.image;scene.style.transformOrigin=porte.dataset.x+"% "+porte.dataset.y+"%";try{carillon.currentTime=0;const p=carillon.play();if(p)p.catch(()=>{})}catch(e){}porte.classList.add("ouverte");setTimeout(()=>etoiles.classList.add("actif"),450);setTimeout(()=>scene.classList.add("entree"),650);setTimeout(()=>flash.classList.add("actif"),2050);setTimeout(()=>destination.classList.add("visible"),3050)}
+function ouvrirPorte(porte){if(animationEnCours)return;animationEnCours=true;imageDestination.src=porte.dataset.image;scene.style.transformOrigin=porte.dataset.x+"% "+porte.dataset.y+"%";try{carillon.currentTime=0;const p=carillon.play();if(p)p.catch(()=>{})}catch(e){}porte.classList.add("ouverte");setTimeout(()=>etoiles.classList.add("actif"),500);setTimeout(()=>scene.classList.add("entree"),700);setTimeout(()=>flash.classList.add("actif"),2350);setTimeout(()=>destination.classList.add("visible"),3250)}
 portes.forEach(porte=>porte.addEventListener("click",()=>ouvrirPorte(porte)));
 retour.addEventListener("click",()=>{destination.classList.remove("visible");flash.classList.remove("actif");etoiles.classList.remove("actif");scene.classList.remove("entree");portes.forEach(porte=>porte.classList.remove("ouverte"));scene.style.transformOrigin="50% 50%";try{carillon.pause();carillon.currentTime=0}catch(e){}setTimeout(()=>{imageDestination.src="";animationEnCours=false},850)});
 </script>
