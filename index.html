@@ -21,12 +21,7 @@
 #starfield.visible{opacity:1}
 .star{position:absolute;left:50%;top:50%;color:#d7a43c;text-shadow:0 0 5px #fff,0 0 12px #ffe39a,0 0 24px #ffc24a;opacity:0;transform:translate(-50%,-50%) scale(.2);will-change:transform,opacity}
 .star.run{animation:traverse var(--d) linear var(--delay) forwards}
-@keyframes traverse{
-0%{opacity:0;transform:translate(calc(-50% + var(--sx)),calc(-50% + var(--sy))) scale(.15)}
-8%{opacity:.9}
-22%{opacity:1}
-100%{opacity:0;transform:translate(calc(-50% + var(--ex)),calc(-50% + var(--ey))) scale(var(--scale))}
-}
+@keyframes traverse{0%{opacity:0;transform:translate(calc(-50% + var(--sx)),calc(-50% + var(--sy))) scale(.15)}8%{opacity:.9}22%{opacity:1}100%{opacity:0;transform:translate(calc(-50% + var(--ex)),calc(-50% + var(--ey))) scale(var(--scale))}}
 #scene.entree{animation:avancer 3.8s cubic-bezier(.28,.01,.07,1) forwards}
 @keyframes avancer{from{transform:scale(1);filter:blur(0)}to{transform:scale(6.4);filter:blur(1.3px)}}
 #flash{position:fixed;inset:0;z-index:30;background:#fff;opacity:0;pointer-events:none}
@@ -40,64 +35,29 @@
 </style>
 </head>
 <body>
-
 <div id="viewport">
 <div id="scene">
 <img id="portesImage" src="portes.png" alt="Les trois portes UNIS">
-
-<button class="porte porte1" data-x="23.75" data-y="54" data-image="souffler.png" aria-label="J’ai besoin de souffler">
-<div class="portail"></div><div class="battant"><canvas></canvas></div>
-</button>
-
-<button class="porte porte2" data-x="50" data-y="54" data-image="douceur.png" aria-label="J’ai besoin de douceur">
-<div class="portail"></div><div class="battant"><canvas></canvas></div>
-</button>
-
-<button class="porte porte3" data-x="76.25" data-y="54" data-image="avancer.png" aria-label="J’ai besoin d’avancer">
-<div class="portail"></div><div class="battant"><canvas></canvas></div>
-</button>
+<button class="porte porte1" data-x="23.75" data-y="54" data-image="souffler.png" aria-label="J’ai besoin de souffler"><div class="portail"></div><div class="battant"><canvas></canvas></div></button>
+<button class="porte porte2" data-x="50" data-y="54" data-image="douceur.png" aria-label="J’ai besoin de douceur"><div class="portail"></div><div class="battant"><canvas></canvas></div></button>
+<button class="porte porte3" data-x="76.25" data-y="54" data-image="avancer.png" aria-label="J’ai besoin d’avancer"><div class="portail"></div><div class="battant"><canvas></canvas></div></button>
 </div>
 </div>
-
 <div id="starfield"></div>
 <div id="flash"></div>
-
-<div id="destination">
-<img id="imageDestination" src="" alt="">
-<button id="retour">Revenir aux portes</button>
-</div>
-
-<audio id="carillon" preload="auto" playsinline>
-<source src="carillon.m4a" type="audio/mp4">
-</audio>
-
+<div id="destination"><img id="imageDestination" src="" alt=""><button id="retour">Revenir aux portes</button></div>
+<audio id="carillon" preload="auto" playsinline><source src="carillon.m4a" type="audio/mp4"></audio>
 <script>
 const scene=document.getElementById("scene"),imagePrincipale=document.getElementById("portesImage"),portes=document.querySelectorAll(".porte"),starfield=document.getElementById("starfield"),flash=document.getElementById("flash"),destination=document.getElementById("destination"),imageDestination=document.getElementById("imageDestination"),retour=document.getElementById("retour"),carillon=document.getElementById("carillon");let animationEnCours=false;
-
-function creerBattants(){
-const W=imagePrincipale.naturalWidth,H=imagePrincipale.naturalHeight;if(!W||!H)return;
-portes.forEach(porte=>{
-const canvas=porte.querySelector("canvas"),ctx=canvas.getContext("2d"),gauche=porte.classList.contains("porte1")?15:porte.classList.contains("porte2")?41.25:67.5,haut=27,largeur=17.5,hauteur=55,sx=W*gauche/100,sy=H*haut/100,sw=W*largeur/100,sh=H*hauteur/100;
-canvas.width=Math.round(sw);canvas.height=Math.round(sh);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(imagePrincipale,sx,sy,sw,sh,0,0,canvas.width,canvas.height);
-});
-}
+function creerBattants(){const W=imagePrincipale.naturalWidth,H=imagePrincipale.naturalHeight;if(!W||!H)return;portes.forEach(porte=>{const canvas=porte.querySelector("canvas"),ctx=canvas.getContext("2d"),gauche=porte.classList.contains("porte1")?15:porte.classList.contains("porte2")?41.25:67.5,haut=27,largeur=17.5,hauteur=55,sx=W*gauche/100,sy=H*haut/100,sw=W*largeur/100,sh=H*hauteur/100;canvas.width=Math.round(sw);canvas.height=Math.round(sh);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(imagePrincipale,sx,sy,sw,sh,0,0,canvas.width,canvas.height)})}
 if(imagePrincipale.complete)creerBattants();else imagePrincipale.addEventListener("load",creerBattants);
-
 function creerTunnelEtoiles(porte){
 starfield.innerHTML="";
-const r=porte.getBoundingClientRect();
-const cx=r.left+r.width/2,cy=r.top+r.height*.52;
+const r=porte.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height*.52;
 for(let i=0;i<220;i++){
-const a=Math.random()*Math.PI*2;
-const departR=Math.random()*Math.max(r.width*.42,18);
-const sx=Math.cos(a)*departR;
-const sy=Math.sin(a)*departR*.75;
-const distance=Math.max(innerWidth,innerHeight)*(0.65+Math.random()*1.1);
-const ex=Math.cos(a)*distance;
-const ey=Math.sin(a)*distance;
-const s=document.createElement("span");
+const a=Math.random()*Math.PI*2,departR=Math.random()*Math.max(r.width*.42,18),sx=Math.cos(a)*departR,sy=Math.sin(a)*departR*.75,distance=Math.max(innerWidth,innerHeight)*(0.65+Math.random()*1.1),ex=Math.cos(a)*distance,ey=Math.sin(a)*distance,s=document.createElement("span");
 s.className="star";
-s.textContent=Math.random()>.30?"✦":"✧";
+s.textContent="★";
 s.style.left=cx+"px";
 s.style.top=cy+"px";
 s.style.fontSize=(10+Math.random()*18)+"px";
@@ -108,42 +68,24 @@ s.style.setProperty("--ey",ey+"px");
 s.style.setProperty("--scale",(1.8+Math.random()*3.7));
 s.style.setProperty("--d",(1.4+Math.random()*2.7)+"s");
 s.style.setProperty("--delay",(Math.random()*1.8)+"s");
-starfield.appendChild(s);
+starfield.appendChild(s)
 }
 starfield.classList.add("visible");
-requestAnimationFrame(()=>document.querySelectorAll(".star").forEach(s=>s.classList.add("run")));
+requestAnimationFrame(()=>document.querySelectorAll(".star").forEach(s=>s.classList.add("run")))
 }
-
 function ouvrirPorte(porte){
 if(animationEnCours)return;
 animationEnCours=true;
-
 imageDestination.src=porte.dataset.image;
 scene.style.transformOrigin=porte.dataset.x+"% "+porte.dataset.y+"%";
-
-try{
-carillon.currentTime=0;
-const p=carillon.play();
-if(p)p.catch(()=>{});
-}catch(e){}
-
+try{carillon.currentTime=0;const p=carillon.play();if(p)p.catch(()=>{})}catch(e){}
 porte.classList.add("ouverte");
-
-/* Les étoiles arrivent autour et DANS la porte */
 setTimeout(()=>creerTunnelEtoiles(porte),250);
-
-/* On avance à travers elles */
 setTimeout(()=>scene.classList.add("entree"),650);
-
-/* La lumière finit par remplir l'écran */
 setTimeout(()=>flash.classList.add("actif"),2900);
-
-/* Puis apparaît l'image finale */
-setTimeout(()=>destination.classList.add("visible"),3900);
+setTimeout(()=>destination.classList.add("visible"),3900)
 }
-
 portes.forEach(porte=>porte.addEventListener("click",()=>ouvrirPorte(porte)));
-
 retour.addEventListener("click",()=>{
 destination.classList.remove("visible");
 flash.classList.remove("actif");
@@ -153,10 +95,9 @@ scene.classList.remove("entree");
 portes.forEach(porte=>porte.classList.remove("ouverte"));
 scene.style.transformOrigin="50% 50%";
 try{carillon.pause();carillon.currentTime=0}catch(e){}
-setTimeout(()=>{imageDestination.src="";animationEnCours=false},850);
+setTimeout(()=>{imageDestination.src="";animationEnCours=false},850)
 });
 </script>
-
 </body>
 </html>
 ```
